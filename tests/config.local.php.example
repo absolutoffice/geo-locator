@@ -1,0 +1,13 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Local-only browser test configuration.
+ *
+ * Copy this file to tests/config.local.php and adjust the path for your
+ * project. tests/config.local.php is intentionally ignored by Git.
+ */
+return [
+    'envFile' => '/var/.private/GeoLocator/.env',
+];

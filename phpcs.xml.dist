@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<ruleset name="GeoLocator">
+    <description>PHP_CodeSniffer rules for GeoLocator.</description>
+
+    <arg name="basepath" value="."/>
+    <arg name="colors"/>
+    <arg name="extensions" value="php"/>
+
+    <file>src</file>
+    <file>tests</file>
+    <file>examples</file>
+    <file>tools</file>
+
+    <exclude-pattern>tests/config.local.php</exclude-pattern>
+
+    <rule ref="PSR12">
+        <exclude name="PSR1.Files.SideEffects"/>
+        <exclude name="PSR1.Classes.ClassDeclaration"/>
+    </rule>
+
+    <!-- Keep the structural PSR-1 rules for library classes. Executable test,
+         example and build scripts intentionally combine helpers and execution. -->
+    <rule ref="PSR1.Files.SideEffects">
+        <exclude-pattern>tests/*</exclude-pattern>
+        <exclude-pattern>examples/*</exclude-pattern>
+        <exclude-pattern>tools/*</exclude-pattern>
+    </rule>
+
+    <rule ref="PSR1.Classes.ClassDeclaration">
+        <exclude-pattern>tests/*</exclude-pattern>
+        <exclude-pattern>examples/*</exclude-pattern>
+        <exclude-pattern>tools/*</exclude-pattern>
+    </rule>
+</ruleset>

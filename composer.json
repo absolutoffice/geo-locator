@@ -1,0 +1,110 @@
+{
+    "name": "absolutoffice/geo-locator",
+    "description": "PHP IP geolocation library with MaxMind lookup, authenticated visitor cache, trusted-proxy handling and verified database updates.",
+    "type": "library",
+    "license": "LGPL-3.0-or-later",
+    "homepage": "https://github.com/absolutoffice/geo-locator",
+    "support": {
+        "issues": "https://github.com/absolutoffice/geo-locator/issues",
+        "source": "https://github.com/absolutoffice/geo-locator"
+    },
+    "autoload": {
+        "psr-4": {
+            "GeoLocator\\": "src/GeoLocator/"
+        }
+    },
+    "require": {
+        "php": "^8.5.12",
+        "ext-json": "*",
+        "ext-phar": "*",
+        "ext-zlib": "*",
+        "ext-sodium": "*",
+        "absolutoffice/xcurl": "^1.1",
+        "maxmind-db/reader": "^1.14"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.1",
+        "squizlabs/php_codesniffer": "^4.0"
+    },
+    "suggest": {
+        "ext-curl": "Preferred HTTPS transport selected by absolutoffice/xcurl for MaxMind database updates.",
+        "ext-openssl": "Enables the HTTPS streams and direct TLS-socket transports provided by absolutoffice/xcurl."
+    },
+    "scripts": {
+        "test": "@php tests/index.php",
+        "lint": "@php tools/lint.php",
+        "analyse": "@php vendor/bin/phpstan analyse src --level=max --memory-limit=512M",
+        "cs": "@php vendor/bin/phpcs --standard=phpcs.xml.dist",
+        "check": [
+            "@composer validate --strict",
+            "@lint",
+            "@test",
+            "@analyse",
+            "@cs"
+        ],
+        "release": "@php tools/build-release.php"
+    },
+    "keywords": [
+        "geolocation",
+        "geoip",
+        "maxmind",
+        "ip",
+        "proxy",
+        "cache"
+    ],
+    "authors": [
+        {
+            "name": "Absolut Office",
+            "homepage": "https://www.absolutoffice.es/",
+            "role": "Lead Developer"
+        }
+    ],
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": false
+    },
+    "scripts-descriptions": {
+        "test": "Run the offline regression suite using this PHP interpreter.",
+        "lint": "Check first-party PHP syntax, including examples and release tools.",
+        "analyse": "Run PHPStan at maximum level (development dependencies required).",
+        "cs": "Check the project coding standard (development dependencies required).",
+        "check": "Validate the package and run all release checks.",
+        "release": "Build a standalone ZIP from a production install; pass -- --version=<version> --output=dist."
+    },
+    "archive": {
+        "name": "geo-locator",
+        "exclude": [
+            "/.github",
+            "/.gitignore",
+            "/.gitattributes",
+            "/vendor",
+            "/dist",
+            "/build",
+            "/var",
+            "/nbproject",
+            "/.idea",
+            "/.vscode",
+            "/.arquitectura",
+            "/.private",
+            "/auth.json",
+            "/.env",
+            "/.env.*",
+            "!/.env.example",
+            "/tests/config.local.php",
+            "/php-lint.txt",
+            "/.phpunit.cache",
+            "/.phpstan.cache",
+            "/.php-cs-fixer.cache",
+            "*.mmdb",
+            "*.mmdb.*",
+            "*.tar.gz",
+            "*.pem",
+            "*.key",
+            "*.p12",
+            "*.pfx",
+            "/db/MaxMind/.state",
+            "/db/MaxMind/.state/**",
+            "/composer.phar"
+        ]
+    }
+}

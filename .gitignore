@@ -1,0 +1,31 @@
+# Local Pi runtime state
+.atl/
+
+# Composer
+/vendor/
+composer.phar
+auth.json
+
+# Private environment configuration (never commit secrets)
+.env
+*.env
+!.env.example
+private/
+
+# Local test overrides
+tests/config.local.php
+
+# MaxMind databases and updater state
+db/MaxMind/*.mmdb
+db/MaxMind/.state/
+
+# Release artifacts
+/dist/
+/build/
+
+# OS / IDE noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
