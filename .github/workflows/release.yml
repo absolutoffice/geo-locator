@@ -1,0 +1,80 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build standalone release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout tagged source
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@2.40.0
+        with:
+          php-version: '8.5'
+          tools: composer:v2
+          coverage: none
+
+      - name: Validate tag against VERSION
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#v}"
+          if [[ ! "$version" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$ ]]; then
+            echo "Tag must be v<SemVer>; received: $GITHUB_REF_NAME" >&2
+            exit 1
+          fi
+          source_version="$(tr -d '\r\n' < VERSION)"
+          if [[ "$version" != "$source_version" ]]; then
+            echo "Tag version $version does not match VERSION $source_version" >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "COMPOSER_ROOT_VERSION=$version" >> "$GITHUB_ENV"
+
+      - name: Install development dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Verify installed PHP and development platform requirements
+        run: composer check-platform-reqs
+
+      - name: Run release quality gate
+        run: composer check
+
+      - name: Install production dependencies
+        run: composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction --no-progress
+
+      - name: Verify production platform requirements
+        run: composer check-platform-reqs --no-dev
+
+      - name: Build standalone ZIP
+        run: php tools/build-release.php --version="${{ steps.version.outputs.version }}" --output=dist
+
+      - name: Verify generated checksum
+        working-directory: dist
+        run: sha256sum --check SHA256SUMS
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            "dist/geo-locator-${VERSION}-standalone.zip" \
+            "dist/SHA256SUMS" \
+            --verify-tag \
+            --title "GeoLocator ${VERSION}" \
+            --generate-notes
