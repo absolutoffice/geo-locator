@@ -1,10 +1,12 @@
-# GeoLocator
+# GeoLocator 1.0.1
 
 PHP IP geolocation library with a MaxMind provider, authenticated visitor cache, trusted-proxy handling and a separate database updater powered by `absolutoffice/xcurl`.
 
-**Composer package:** `absolutoffice/geo-locator` · **Namespace:** `GeoLocator\` · **PHP:** `^8.5.12` · **License:** LGPL-3.0-or-later.
+**Source release:** `1.0.1` · **Composer package:** `absolutoffice/geo-locator` · **Namespace:** `GeoLocator\` · **xCurl:** `1.1.1` · **PHP:** `8.4.27+` or `8.5.12+` (both below `8.6`) · **License:** LGPL-3.0-or-later.
 
-> **1.0.0 release source — 28/10/2026.** This tree is prepared for the initial `v1.0.0` Git tag and GitHub Release. `VERSION` records the source release identifier; Composer still derives the package version from Git, so the branch remains `dev-main` until the `v1.0.0` tag is published. The intended final repository is `https://github.com/absolutoffice/geo-locator`.
+> **1.0.1 release candidate — 18/11/2026.** This tree is prepared for the `v1.0.1` Git tag and GitHub Release. `VERSION` records the source release identifier; Composer still derives the package version from Git, so the branch remains `dev-main` until the `v1.0.1` tag is published. The intended final repository is `https://github.com/absolutoffice/geo-locator`.
+
+**Release validation record (1.0.1):** [docs/VALIDACION-1.0.1.md](docs/VALIDACION-1.0.1.md) documents separate PHP 8.4/8.5 checks, Composer-based installation tests and Git-ready validation reports.
 
 ## Choose an installation route
 
@@ -25,10 +27,10 @@ composer config repositories.geolocator vcs https://github.com/absolutoffice/geo
 composer require absolutoffice/geo-locator:dev-main
 ```
 
-`dev-main` explicitly selects the development branch. After the prepared `v1.0.0` tag has been published, select its compatible stable range instead:
+`dev-main` explicitly selects the development branch. After the prepared `v1.0.1` tag has been published, select its compatible stable range instead:
 
 ```bash
-composer require 'absolutoffice/geo-locator:^1.0'
+composer require 'absolutoffice/geo-locator:^1.0.1'
 ```
 
 Keep the `repositories` entry in the application's root `composer.json`. Composer does not inherit repository definitions from dependencies. If the package is later registered on Packagist, consumers can use `composer require` without that VCS entry. See the official [Composer repository](https://getcomposer.org/doc/05-repositories.md) and [library publishing](https://getcomposer.org/doc/02-libraries.md) documentation.
@@ -80,11 +82,11 @@ Composer installation and autoloading do not download a database. A public looku
 
 ## PHP policy
 
-Use PHP `^8.5.12` in CLI and the web SAPI. The current Composer requirements and runtime guards retain the PHP 9 upper boundary by project decision; PHP 9 compatibility will be assessed when that runtime is available for validation. Apply later stable security/bugfix patches after the project's regression checks. Composer does not install or update the interpreter.
+For **xCurl 1.1.1**, the supported PHP versions are `>=8.4.27 <8.5 || >=8.5.12 <8.6`, in both CLI and the web SAPI. PHP 8.4.0–8.4.26, PHP 8.5.0–8.5.11, PHP 8.6 and PHP 9 are not supported by this combination. These are upstream dependency limits, not a blanket claim of compatibility with every future PHP version. The exact `absolutoffice/xcurl:1.1.1` dependency is pinned in `composer.json` and `composer.lock`. Apply supported PHP security patches; Composer does not install or update the interpreter.
 
 Runtime dependencies are `maxmind-db/reader` and `absolutoffice/xcurl`, with JSON, Phar, zlib and Sodium as declared in `composer.json`. xcurl requires a usable HTTPS backend; cURL is preferred, with streams or direct TLS sockets available when their prerequisites are present.
 
-The PHP 8.5.12/xcurl migration and the security guidance recorded on 25/10/2026 remain documented in [MIGRACION-XCURL.md](MIGRACION-XCURL.md). That dated guidance is a historical snapshot; check the official PHP advisories when deploying.
+The [xCurl migration guide](MIGRACION-XCURL.md) opens with the current GeoLocator **1.0.1 / xCurl 1.1.1** requirements. Its separately identified October 2026 historical notes describe the earlier **xCurl 1.1.0** baseline and tests under PHP 8.5.12; they are not current installation requirements or proof of 1.0.1 test results. Check official PHP advisories when deploying.
 
 ## Current public core
 
@@ -124,7 +126,7 @@ The supplied 0.9 RC documentation records the following validation of the previo
 - updater state/lock live under the writable MaxMind data area, while the consumer-owned private `.env` remains read-only;
 - visitor cache -> first request miss, second request hit, and IP change invalidates the cached entry through `ipToken`.
 
-The current migration's verification and remaining deployment checks are recorded in [MIGRACION-XCURL.md](MIGRACION-XCURL.md). PHPStan and PHPCS remain release-gate checks when development dependencies are installed.
+Historical migration test evidence and the checks still required for **1.0.1** are distinguished in [MIGRACION-XCURL.md](MIGRACION-XCURL.md). PHPStan and PHPCS remain release-gate checks when development dependencies are installed.
 
 ## Cache security layer
 
@@ -309,7 +311,7 @@ In a repository checkout with development dependencies installed:
 
 ```bash
 composer install
-composer validate --strict
+composer validate --strict --no-check-all
 composer check-platform-reqs
 composer test
 composer lint
@@ -317,16 +319,18 @@ composer analyse
 composer cs
 ```
 
+`--no-check-all` suppresses Composer warnings about overly strict or unbounded dependency constraints (used here because xCurl 1.1.1 is intentionally pinned); other warnings/errors remain strict and the lock file is still checked. In local release validation, the checker also sets `COMPOSER_ROOT_VERSION=1.0.1` to avoid Composer mistaking the untagged source checkout for version 1.0.0.
+
 The standalone bundle includes the regression tests and lint runner, so `php tests/index.php` and `php tools/lint.php` also work without development dependencies. PHPStan and PHPCS require a development installation. Tests supplied in an installed dependency are development resources; run maintenance scripts in a dedicated checkout instead of modifying an application's dependency tree.
 
 For a release, start with the validated checkout, install its locked production dependencies and build the standalone asset:
 
 ```bash
 composer install --no-dev --prefer-dist --optimize-autoloader --no-scripts --no-interaction
-php tools/build-release.php --version=1.0.0 --output=dist
+php tools/build-release.php --version=1.0.1 --output=dist
 ```
 
-For this release, `VERSION` is `1.0.0`; the builder rejects a stable artifact version that does not match it. It also checks the production dependency set against `composer.lock` and creates the ZIP and `SHA256SUMS`. See [docs/RELEASING.md](docs/RELEASING.md) for CI, tags, GitHub Release assets and optional Packagist registration.
+For this release, `VERSION` is `1.0.1`; the builder rejects a stable artifact version that does not match it. It also checks the production dependency set against `composer.lock` and creates the ZIP and `SHA256SUMS`. See [docs/RELEASING.md](docs/RELEASING.md) for CI, tags, GitHub Release assets and optional Packagist registration.
 
 ## Browser test console
 

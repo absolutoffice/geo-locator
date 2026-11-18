@@ -1,31 +1,40 @@
-# Local Pi runtime state
-.atl/
-
-# Composer
+# Composer dependencies and generated artifacts
 /vendor/
-composer.phar
-auth.json
-
-# Private environment configuration (never commit secrets)
-.env
-*.env
-!.env.example
-private/
-
-# Local test overrides
-tests/config.local.php
-
-# MaxMind databases and updater state
-db/MaxMind/*.mmdb
-db/MaxMind/.state/
-
-# Release artifacts
 /dist/
 /build/
+/var/
+/composer.phar
 
-# OS / IDE noise
+# Runtime configuration and credentials
+/.env
+/.env.*
+!/.env.example
+/auth.json
+/.private/
+/tests/config.local.php
+
+# GeoIP databases, updater state and downloaded archives
+*.mmdb
+*.mmdb.*
+*.tar.gz
+/db/MaxMind/.state/
+
+# Private keys / certificates
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Tool caches and generated reports
+/php-lint.txt
+/.phpunit.cache/
+/.phpstan.cache
+/.php-cs-fixer.cache
+
+# IDE / local project metadata
+/.idea/
+/.vscode/
+/nbproject/
+/.arquitectura/
 .DS_Store
 Thumbs.db
-.idea/
-.vscode/
-*.swp

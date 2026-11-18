@@ -1,30 +1,64 @@
-# Migración de geoLocator a xcurl y PHP 8.5.12
+# Migración a xCurl — GeoLocator 1.0.1 (PHP 8.4 y 8.5)
 
-Migración y revisión PHPDoc: **25/10/2026**. Preparación de distribución Composer/GitHub: **26/10/2026**.
+**Estado vigente: 18/11/2026.** La versión fuente de geoLocator es **1.0.1**,
+con dependencia exacta **`absolutoffice/xcurl:1.1.1`**. El requisito de PHP
+proviene de esa versión de xCurl: se admite **PHP 8.4 desde 8.4.27** y
+**PHP 8.5 desde 8.5.12**; las versiones inferiores y las ramas 8.6/9 no están
+incluidas en el rango declarado. No equivale a cualquier PHP 8.4.0 o superior.
+La compatibilidad debe verificarse tanto en CLI como en el SAPI web.
 
-Este documento conserva las decisiones y evidencias de la migración a xcurl. Para instalar la distribución pública preparada después de esa migración, consultar [docs/INSTALLATION.md](docs/INSTALLATION.md). El repositorio de fuente y el ZIP autónomo tienen contenidos distintos: el primero se instala con Composer; el segundo incluye las dependencias de producción. Ninguno distribuye las bases, credenciales o estado privados del archivo original.
+**Antecedentes documentados:** migración y revisión PHPDoc del **25/10/2026**
+(versión anterior basada en PHP 8.5.12 y xCurl 1.1.0); preparación de la
+distribución Composer/GitHub del **26/10/2026**. Los informes de pruebas de esas
+fechas son históricos, y no constituyen una validación de geoLocator 1.0.1.
 
-## Resultado y requisitos
+Para instalar esta versión, seguir [docs/INSTALLATION.md](docs/INSTALLATION.md).
+El repositorio de código no incluye `vendor/`, bases MMDB, credenciales ni
+estado privado. El ZIP autónomo, cuando se construya y publique, incorporará las
+dependencias de producción, pero tampoco esos datos privados.
+
+## Resultado y requisitos vigentes para 1.0.1
 
 GeoLocator utiliza `absolutoffice/xcurl` para sus comunicaciones HTTPS salientes. El cliente específico de MaxMind conserva las URLs, las credenciales, la consulta de fecha y las verificaciones del archivo. El actualizador conserva el bloqueo, la extracción, la validación MMDB y el reemplazo atómico.
 
-| Elemento | Requisito de esta entrega |
+| Elemento | Requisito de geoLocator 1.0.1 |
 | --- | --- |
-| PHP | `^8.5.12`, también en CLI y en el servidor web |
-| Transporte y políticas HTTP | `absolutoffice/xcurl:^1.1` |
+| Versión del proyecto | `1.0.1` en `VERSION` (futuro tag `v1.0.1`) |
+| PHP (CLI y web) | `>=8.4.27 <8.5 || >=8.5.12 <8.6` |
+| Transporte y políticas HTTP | `absolutoffice/xcurl:1.1.1` (versión exacta) |
 | Lector MMDB | `maxmind-db/reader:^1.14` |
 | Extensiones requeridas por geoLocator | JSON, Phar, zlib y Sodium |
-| Transporte disponible | cURL, streams HTTPS o socket TLS/OpenSSL, elegido por xcurl |
+| Transporte HTTPS disponible | cURL, streams HTTPS o socket TLS/OpenSSL, elegido por xCurl |
 
-El requisito de PHP permite versiones compatibles posteriores y evita instalar el paquete en versiones inferiores a 8.5.12. Composer no instala ni actualiza el intérprete PHP. La aplicación consumidora debe conservar su `composer.lock` para fijar las dependencias instaladas.
+**Límites de compatibilidad:** no se admite PHP 8.4.0–8.4.26, PHP 8.5.0–8.5.11,
+PHP 8.6 ni PHP 9 con esta combinación de paquetes. El rango exacto coincide con
+[el manifiesto oficial de xCurl v1.1.1](https://github.com/absolutoffice/xcurl/blob/v1.1.1/composer.json).
+Composer no instala ni actualiza PHP; comprobar `composer check-platform-reqs`
+y el runtime web real. La aplicación consumidora debe conservar su propio
+`composer.lock` para reproducir sus instalaciones.
 
-La entrega autónoma de la migración incluía `vendor/` de producción: **xcurl v1.1.0** (commit `5661dcb2ae959ec2249232bef4ed933230f2f4f2`) y **maxmind-db/reader v1.14.0**. El lock conserva esas dependencias y las herramientas de desarrollo PHPStan 2.2.14 y PHPCS 4.0.4. En la distribución Composer/GitHub, el código fuente se entrega sin `vendor/`; el builder incorpora exclusivamente las dependencias de producción al asset `*-standalone.zip`. Ejecutar `composer install` sin `--no-dev` en un checkout de desarrollo para disponer de las herramientas de análisis.
+**Dependencias entregadas:** la distribución de código fuente de 1.0.1 va sin
+`vendor/` y fija xCurl **v1.1.1** (commit
+`055048cc51c91a9bacca663ea3d809fb1a94da92`) en su `composer.lock`.
+La construcción autónoma incorpora las dependencias de producción y sus
+licencias. Para ejecutar PHPStan y PHPCS en desarrollo, instalar también
+`require-dev` con `composer install` (sin `--no-dev`).
 
-La migración partió del archivo standalone facilitado, cuya documentación se identificaba como 0.9.0-rc1. La preparación de distribución tampoco asigna un nuevo tag SemVer a geoLocator. Antes de publicar una versión estable, decidir el número correspondiente a los cambios de mínimo PHP y de las clases HTTP públicas. Los artefactos locales `dev-main` son previews de desarrollo.
+**Referencia histórica de octubre de 2026:** la entrega original de la migración
+incluía xCurl **v1.1.0** (commit
+`5661dcb2ae959ec2249232bef4ed933230f2f4f2`) y MaxMind Reader v1.14.0
+en su `vendor/`; los resultados de PHPStan 2.2.14 y PHPCS 4.0.4 de ese
+archivo se conservan más abajo como evidencia histórica, **no** como resultados
+de la versión 1.0.1.
 
-## Actualización de una instalación
+La migración se inició sobre una copia 0.9.0-rc1. Posteriormente se preparó
+GeoLocator 1.0.0. La entrega actual está identificada como **1.0.1** y su
+publicación mediante el tag `v1.0.1` sigue pendiente de las pruebas de
+instalación y de CI. Los artefactos `dev-main` son previews de desarrollo.
 
-El procedimiento siguiente describe la actualización de una copia autónoma previa. Para una dependencia administrada por Composer, actualizarla desde la aplicación consumidora y seguir su propio lock; conservar configuración, MMDB y estado en ubicaciones persistentes fuera de `vendor/`.
+## Actualización a geoLocator 1.0.1
+
+El procedimiento siguiente describe la actualización de una copia autónoma previa a **1.0.1**. Para una dependencia administrada por Composer, actualizarla desde la aplicación consumidora y seguir su propio lock; conservar configuración, MMDB y estado en ubicaciones persistentes fuera de `vendor/`.
 
 1. Actualizar PHP a una versión estable compatible, comprobando por separado CLI y PHP-FPM/Apache. Mantener las extensiones necesarias y la configuración de certificados CA.
 2. Conservar una copia recuperable del código, configuración y MMDB de la instalación. Mantener el `.env` privado en su ubicación actual.
@@ -103,9 +137,12 @@ El timeout sigue siendo el del transporte. Los backends no tienen una semántica
 
 El historial técnico de xcurl puede contener URLs firmadas. Evitar registrar sin filtrar URLs completas, cabeceras de autorización y cadenas completas de excepciones en interfaces públicas.
 
-## PHP y seguridad: situación comprobada el 25/10/2026
+## Antecedente histórico: PHP y seguridad, 25/10/2026
 
-PHP publicó 8.5.12 el 21/10/2026 como actualización de seguridad. Corrige CVE-2026-109618 y CVE-2026-109619. Otras ramas mantenidas también recibieron parches; el mínimo 8.5.12 es la decisión de plataforma de este proyecto, además de ser el requisito de xcurl 1.1.0.
+**Esta sección documenta la decisión de octubre de 2026, no los mínimos de
+geoLocator 1.0.1.** Para esta versión rige el rango de PHP indicado al principio.
+
+PHP publicó 8.5.12 el 21/10/2026 como actualización de seguridad. Corrige CVE-2026-109618 y CVE-2026-109619. Otras ramas mantenidas también recibieron parches; en la migración original se eligió PHP 8.5.12 como mínimo porque xCurl 1.1.0 lo exigía. **La versión 1.0.1 ya no mantiene ese mínimo como requisito único**: admite PHP 8.4.27+ y PHP 8.5.12+ dentro de sus ramas respectivas.
 
 El aviso adicional del 23/10/2026 describe un vector pendiente bajo una combinación concreta: uso de `php_binary` o `php_serialize` en configuración, cambio a `php` con `ini_set()` antes de `session_start()` y seguimiento de subidas de sesión activado. PHP recomienda mantener desactivado ese seguimiento hasta la siguiente corrección:
 
@@ -117,17 +154,26 @@ Aplicar la configuración en el `php.ini` o la configuración efectiva del SAPI 
 
 La política de mantenimiento es instalar los siguientes parches estables de PHP tras ejecutar las comprobaciones de la aplicación. Si una nueva corrección hace necesario elevar el mínimo obligatorio, actualizar `composer.json` y el lock mediante Composer y volver a validar; no editar el lock manualmente ni utilizar `--ignore-platform-reqs`.
 
-Fuentes primarias consultadas:
+Fuentes primarias (la referencia de xCurl 1.1.1 es la vigente; las demás
+corresponden a la revisión histórica):
 
-- [PHP 8.5.12: anuncio](https://www.php.net/releases/8_5_12.php).
+- [xCurl 1.1.1: manifiesto Composer vigente](https://github.com/absolutoffice/xcurl/blob/v1.1.1/composer.json).
+- [xCurl 1.1.1: release oficial](https://github.com/absolutoffice/xcurl/releases/tag/v1.1.1).
+- [PHP 8.5.12: anuncio histórico](https://www.php.net/releases/8_5_12.php).
 - [PHP: avisos oficiales del 21/10/2026 y 23/10/2026](https://www.php.net/archive/2026.php).
 - [xcurl 1.1.0: manifiesto Composer](https://github.com/absolutoffice/xcurl/blob/v1.1.0/composer.json).
 - [xcurl 1.1.0: cliente HTTP](https://github.com/absolutoffice/xcurl/blob/v1.1.0/src/Client/HttpClient.php).
 - [MaxMind: actualización de bases y redirecciones R2](https://dev.maxmind.com/geoip/updating-databases/).
 
-## Evidencias de verificación de la migración del 25/10/2026
+## Validación vigente para geoLocator 1.0.1
 
-Las comprobaciones se han ejecutado con **PHP 8.5.12 CLI NTS**, compilado desde el archivo oficial y con SHA-256 contrastado con php.net, y **Composer 2.10.3**. El runtime utilizado para estas pruebas no se incluye en el archivo ni representa una actualización de vuestros servidores.
+La dependencia `absolutoffice/xcurl` está fijada deliberadamente a `1.1.1`. Composer la acepta en una instalación, pero `composer validate --strict` genera una advertencia de estilo sobre restricciones exactas. Para la versión vigente, ejecutar `composer validate --strict --no-check-all` o `composer check`: el validador seguirá comprobando el lock y los demás avisos o errores. Para evitar que un checkout sin tag aparezca como `1.0.0` en el diagnóstico, el verificador configura temporalmente `COMPOSER_ROOT_VERSION=1.0.1` sin añadir un campo `version` a `composer.json`.
+
+Las comprobaciones históricas siguientes, con xCurl 1.1.0, conservan sus comandos originales y no corresponden a esta entrega.
+
+## Evidencias históricas de verificación — 25/10/2026
+
+**No atribuir estas pruebas a geoLocator 1.0.1 / xCurl 1.1.1.** Corresponden a la migración anterior con xCurl 1.1.0. Se ejecutaron con **PHP 8.5.12 CLI NTS**, compilado desde el archivo oficial y con SHA-256 contrastado con php.net, y **Composer 2.10.3**. El runtime utilizado para esas pruebas no se incluye en el archivo ni representa una actualización de vuestros servidores.
 
 | Comprobación | Resultado observado |
 | --- | --- |
@@ -164,9 +210,9 @@ php -d disable_functions=curl_exec -d allow_url_fopen=0 tests/index.php
 
 La descarga autenticada contra MaxMind y la configuración PHP-FPM/Apache del hosting deben verificarse en el despliegue, con las credenciales gestionadas por la aplicación. Las pruebas automáticas no necesitan solicitar ni exponer esas credenciales.
 
-## Revisión de PHPDoc — 25/10/2026
+## Revisión histórica de PHPDoc — 25/10/2026
 
-Se ha completado la documentación PHPDoc de todo el código propio de producción, además de los dobles de prueba, funciones auxiliares y funciones del panel. Los comentarios mantienen el inglés utilizado en el código. La revisión incluye responsabilidades, significado y unidades de parámetros, resultados y valores nulos, formas de arrays, firmas de callbacks, precondiciones, efectos sobre archivos/cookies y excepciones que pueden propagarse.
+Se completó la documentación PHPDoc de todo el código propio de producción, además de los dobles de prueba, funciones auxiliares y funciones del panel. Los comentarios mantienen el inglés utilizado en el código. La revisión incluye responsabilidades, significado y unidades de parámetros, resultados y valores nulos, formas de arrays, firmas de callbacks, precondiciones, efectos sobre archivos/cookies y excepciones que pueden propagarse.
 
 La auditoría de declaraciones propias de `src/GeoLocator/` da este resultado:
 
@@ -186,10 +232,17 @@ La revisión PHPDoc del 25/10/2026 modificó comentarios en **81 archivos PHP** 
 
 Validación de esta revisión: **82/82 archivos sin errores de sintaxis**, **10/10 archivos de pruebas correctos**, **PHPStan nivel máximo sin errores** y **PHPCS sin infracciones**. La cobertura mide la presencia de documentación y se ha complementado con revisión del contenido contra las implementaciones; no sustituye la revisión de futuros cambios de comportamiento.
 
-## Distribución Composer/GitHub — 26/10/2026
+## Antecedente de distribución Composer/GitHub — 26/10/2026
 
-Se conserva la API documentada y el mínimo de PHP acordado. La preparación incorpora un árbol de fuente publicable, ejemplos de integración, comprobaciones del autoloader consumidor y construcción de un ZIP autónomo con dependencias de producción. La identidad Composer sigue siendo `absolutoffice/geo-locator`; no se ha publicado un tag ni registrado el paquete en Packagist como parte de esta preparación.
+La preparación inicial conservó la API y el mínimo de PHP acordado entonces
+(PHP 8.5.12). Incorporó un árbol de fuente publicable, ejemplos de integración,
+comprobaciones del autoloader consumidor y construcción de un ZIP autónomo con
+dependencias de producción. La identidad Composer permanece
+`absolutoffice/geo-locator`. Esta versión **1.0.1** amplía la compatibilidad a
+los PHP 8.4 y 8.5 indicados arriba y sustituye la dependencia original por
+**xCurl 1.1.1**. Ni este trabajo local ni el documento publican un tag o
+registran el paquete en Packagist.
 
 La configuración recomendada para las nuevas instalaciones usa rutas absolutas de la aplicación, por ejemplo `/srv/my-app/var/geoip/GeoLite2-City.mmdb` y `/srv/my-app/var/geoip/.state`. Las rutas relativas existentes conservan su resolución desde la raíz del paquete. La aplicación elige y suministra su archivo de entorno explícitamente.
 
-La instalación y publicación se describen en [INSTALLATION.md](docs/INSTALLATION.md) y [RELEASING.md](docs/RELEASING.md). Las evidencias anteriores siguen correspondiendo a la migración y revisión PHPDoc de 25/10/2026; las comprobaciones de distribución deben ejecutarse sobre el artefacto que se vaya a publicar.
+La instalación y publicación se describen en [INSTALLATION.md](docs/INSTALLATION.md) y [RELEASING.md](docs/RELEASING.md). Las evidencias anteriores siguen correspondiendo a la migración y revisión PHPDoc de 25/10/2026; los requisitos actuales son los de **geoLocator 1.0.1**. Las comprobaciones de distribución deben ejecutarse sobre **el ZIP y el commit que se vayan a publicar**, con PHP compatible y xCurl 1.1.1 instalado.

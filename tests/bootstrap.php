@@ -3,7 +3,7 @@
 /**
  * Load the standalone test environment and expose shared assertion helpers.
  *
- * Requires PHP ^8.5.12. Composer is preferred; the local PSR-4 fallback supports
+ * Requires PHP >=8.4.27 <8.5 or >=8.5.12 <8.6. Composer is preferred; the local PSR-4 fallback supports
  * dependency-free tests, while HTTP tests explicitly call requireXcurl().
  * ComposerInstallationTest exercises the generated Composer loader separately
  * so this development fallback cannot conceal an installation/autoload failure.
@@ -13,8 +13,11 @@
 
 declare(strict_types=1);
 
-if (PHP_VERSION_ID < 80512 || PHP_VERSION_ID >= 90000) {
-    throw new RuntimeException('GeoLocator tests require PHP ^8.5.12 (at least 8.5.12 and below 9.0).');
+$phpVersionSupported = (PHP_VERSION_ID >= 80427 && PHP_VERSION_ID < 80500)
+    || (PHP_VERSION_ID >= 80512 && PHP_VERSION_ID < 80600);
+
+if (!$phpVersionSupported) {
+    throw new RuntimeException('GeoLocator tests require PHP >=8.4.27 <8.5 or >=8.5.12 <8.6.');
 }
 
 $environmentFile = dirname(__DIR__) . '/config/environment.php';

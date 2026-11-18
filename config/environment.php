@@ -13,13 +13,16 @@
  * External runtime dependencies require Composer: maxmind-db/reader for
  * public-IP lookups and absolutoffice/xcurl for MaxMind updates.
  *
- * @throws RuntimeException When PHP is older than 8.5.12 or is version 9.0 or newer.
+ * @throws RuntimeException When PHP is outside the xCurl 1.1.1 supported ranges (8.4.27+ or 8.5.12+, below 8.6).
  */
 
 declare(strict_types=1);
 
-if (PHP_VERSION_ID < 80512 || PHP_VERSION_ID >= 90000) {
-    throw new RuntimeException('GeoLocator requires PHP ^8.5.12 (at least 8.5.12 and below 9.0).');
+$phpVersionSupported = (PHP_VERSION_ID >= 80427 && PHP_VERSION_ID < 80500)
+    || (PHP_VERSION_ID >= 80512 && PHP_VERSION_ID < 80600);
+
+if (!$phpVersionSupported) {
+    throw new RuntimeException('GeoLocator 1.0.1 requires PHP >=8.4.27 <8.5 or >=8.5.12 <8.6 (xCurl 1.1.1).');
 }
 
 $composerAutoload = dirname(__DIR__) . '/vendor/autoload.php';

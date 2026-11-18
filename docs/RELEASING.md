@@ -1,8 +1,8 @@
 # Publicación de geoLocator en GitHub
 
-Preparación de distribución: **28/10/2026**.
+Preparación de distribución: **18/11/2026**.
 
-Este procedimiento describe cómo publicar el código como paquete Composer y producir una descarga autónoma. El árbol fuente queda asignado a `1.0.0` mediante `VERSION`, pero la preparación local no crea por sí sola el repositorio remoto, el tag `v1.0.0`, la GitHub Release ni una entrada de Packagist. La ubicación final prevista es `https://github.com/absolutoffice/geo-locator`.
+Este procedimiento describe cómo publicar el código como paquete Composer y producir una descarga autónoma. El árbol fuente queda asignado a `1.0.1` mediante `VERSION`, pero la preparación local no crea por sí sola el repositorio remoto, el tag `v1.0.1`, la GitHub Release ni una entrada de Packagist. La ubicación final prevista es `https://github.com/absolutoffice/geo-locator`.
 
 ## Qué se publica
 
@@ -25,17 +25,23 @@ La versión que Composer instala se obtiene de las ramas y tags de Git. No mante
 
 ## 1. Validar el checkout
 
-Utilizar un checkout limpio y un PHP compatible. Instalar las dependencias de desarrollo y ejecutar las comprobaciones del proyecto:
+Utilizar un checkout limpio y PHP 8.4.27+ (<8.5) o 8.5.12+ (<8.6). `composer.lock` fija xCurl 1.1.1; instalar las dependencias de desarrollo y ejecutar las comprobaciones del proyecto:
 
 ```bash
 composer install --prefer-dist --no-interaction
-composer validate --strict
+composer validate --strict --no-check-all
 composer check-platform-reqs
 composer test
 composer lint
 composer analyse
 composer cs
 ```
+
+El indicador `--no-check-all` evita el aviso de Composer sobre la restricción intencionadamente exacta `absolutoffice/xcurl:1.1.1`; los demás avisos y errores siguen siendo críticos con `--strict`. No se debe sustituir por `--no-check-lock` ni desactivar la validación del lock.
+
+Si se repite la validación con `--release`, el script conserva en `var/validation/` el ZIP y el SHA-256 anteriores antes de construir otros nuevos. El generador directo `tools/build-release.php` continúa rechazando sobrescrituras, como medida de seguridad.
+
+Para comprobar y registrar por separado PHP 8.4 y 8.5, utilizar `tools/verify-1.0.1.sh` siguiendo [el registro de validación](VALIDACION-1.0.1.md); el script guarda un resumen Markdown por intérprete en `docs/validation/`, listo para revisar e incluir en Git.
 
 Para verificar también la selección de sockets en un entorno restringido:
 
@@ -72,7 +78,7 @@ Si `origin` ya existe, comprobar su URL antes de cambiarlo. A partir de la rama 
 
 ## 3. Preparar y probar la versión
 
-La preparación actual fija `VERSION` y `CHANGELOG.md` en `1.0.0`. Para una versión futura, actualizar ambos antes de construir el candidato. La migración anterior elevó el mínimo de PHP y cambió el constructor público de `MaxMindHttpDownloadClient`; esos cambios deben seguir reflejados en el versionado.
+La preparación actual fija `VERSION` y `CHANGELOG.md` en `1.0.1`. Para una versión futura, actualizar ambos antes de construir el candidato. Esta revisión alinea PHP con los límites de xCurl 1.1.1; la migración anterior cambió el constructor público de `MaxMindHttpDownloadClient` y ese cambio histórico sigue documentado.
 
 El builder permite preparar el candidato local antes de crear el tag:
 
@@ -80,14 +86,14 @@ El builder permite preparar el candidato local antes de crear el tag:
 composer install --no-dev --prefer-dist --optimize-autoloader --no-scripts --no-interaction
 composer check-platform-reqs --no-dev
 php tests/index.php
-php tools/build-release.php --version=1.0.0 --output=dist
+php tools/build-release.php --version=1.0.1 --output=dist
 ```
 
 Para una release estable, `--version` debe coincidir exactamente con `VERSION`; `dev-main` queda reservado para previews de desarrollo. La construcción requiere que `vendor/` corresponda a las dependencias de producción del lock. No usar una instalación con herramientas de desarrollo ni modificar manualmente los metadatos Composer.
 
 El builder escribe:
 
-- `dist/geo-locator-1.0.0-standalone.zip`.
+- `dist/geo-locator-1.0.1-standalone.zip`.
 - `dist/SHA256SUMS`.
 
 El ZIP tiene una única carpeta superior `geo-locator/`. Comprobar su suma y extraerlo en un directorio separado para probar la instalación entregable:
@@ -106,8 +112,8 @@ Para volver a trabajar con las herramientas de desarrollo en el checkout, ejecut
 Una vez revisado el commit de la versión y con CI correcto, crear y subir el tag que corresponda a `VERSION`:
 
 ```bash
-git tag -a v1.0.0 -m "GeoLocator 1.0.0"
-git push origin v1.0.0
+git tag -a v1.0.1 -m "GeoLocator 1.0.1"
+git push origin v1.0.1
 ```
 
 El workflow de Release utiliza el repositorio que lo ejecuta y el tag recibido, comprueba que el tag sea SemVer y coincida con `VERSION`, ejecuta las comprobaciones del proyecto, construye el paquete autónomo y adjunta el ZIP y las sumas a la Release. Debe disponer del permiso de escritura de contenido requerido por esa publicación. El workflow no configura servidores consumidores ni descarga una base MaxMind con credenciales privadas.

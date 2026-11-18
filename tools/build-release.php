@@ -54,7 +54,7 @@ function releaseOptions(array $arguments): ?array
         . '(?:\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?'
         . '(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/D';
     if ($version !== 'dev-main' && preg_match($semver, $version) !== 1) {
-        throw new RuntimeException('Version must be dev-main or SemVer, for example 1.0.0 or 1.0.0-rc.1.');
+        throw new RuntimeException('Version must be dev-main or SemVer, for example 1.0.1 or 1.0.1-rc.1.');
     }
 
     return ['version' => $version, 'output' => $output];
@@ -411,8 +411,10 @@ function releaseArchive(string $version, string $output, array $files): string
 }
 
 try {
-    if (PHP_SAPI !== 'cli' || PHP_VERSION_ID < 80512 || PHP_VERSION_ID >= 90000) {
-        throw new RuntimeException('Release builds require PHP ^8.5.12 CLI.');
+    $phpVersionSupported = (PHP_VERSION_ID >= 80427 && PHP_VERSION_ID < 80500)
+        || (PHP_VERSION_ID >= 80512 && PHP_VERSION_ID < 80600);
+    if (PHP_SAPI !== 'cli' || !$phpVersionSupported) {
+        throw new RuntimeException('Release builds require PHP >=8.4.27 <8.5 or >=8.5.12 <8.6 CLI.');
     }
     if (!class_exists(PharData::class) || !extension_loaded('zlib')) {
         throw new RuntimeException('Release builds require the Phar and zlib extensions.');

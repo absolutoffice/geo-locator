@@ -1,8 +1,8 @@
 # Instalación de geoLocator
 
-Preparación de distribución: **28/10/2026**.
+Preparación de distribución: **18/11/2026**.
 
-El paquete Composer conserva el nombre `absolutoffice/geo-locator`, el namespace `GeoLocator\` y PHP `^8.5.12`. Este árbol fuente está preparado como versión `1.0.0`, registrada en `VERSION`; Composer no usa ese archivo para resolver la dependencia y seguirá viendo la rama como `dev-main` hasta que se publique el tag `v1.0.0`. La ubicación final prevista es `https://github.com/absolutoffice/geo-locator`.
+El paquete Composer conserva el nombre `absolutoffice/geo-locator`, el namespace `GeoLocator\` y PHP `>=8.4.27 <8.5 || >=8.5.12 <8.6`. Este árbol fuente está preparado como versión `1.0.1`, registrada en `VERSION`; Composer no usa ese archivo para resolver la dependencia y seguirá viendo la rama como `dev-main` hasta que se publique el tag `v1.0.1`. La ubicación final prevista es `https://github.com/absolutoffice/geo-locator`.
 
 ## 1. Elegir la distribución
 
@@ -16,12 +16,12 @@ Las tres modalidades utilizan la misma API. Ninguna distribución pública conti
 
 ### Requisitos de ejecución
 
-- PHP `>=8.5.12` y `<9.0`, tanto para CLI como para el SAPI web que ejecute la aplicación.
+- PHP `8.4.27+` y `<8.5`, o `8.5.12+` y `<8.6`, tanto para CLI como para el SAPI web que ejecute la aplicación. Es el rango declarado por `absolutoffice/xcurl:1.1.1`; PHP 8.4.0–8.4.26, 8.5.0–8.5.11 y 8.6+ no pueden instalar esta combinación.
 - Extensiones JSON, Phar, zlib y Sodium declaradas por el paquete.
 - Para las actualizaciones HTTPS, un transporte usable por xcurl: cURL, streams HTTPS o socket TLS con sus requisitos de entorno. La instalación de Composer no habilita extensiones del servidor.
 - Una base MaxMind compatible y legible para consultar IP públicas. La primera actualización necesita además las credenciales correspondientes, conectividad HTTPS y permisos de escritura en los directorios de datos.
 
-La compatibilidad con PHP 9 se evaluará cuando se pueda probar esa versión. Esta preparación conserva las restricciones de versión acordadas.
+La compatibilidad con PHP 8.6 y posteriores se evaluará cuando xCurl las admita y se puedan validar. No se debe forzar la plataforma de Composer para eludir sus requisitos.
 
 ## 2. Instalar con Composer desde GitHub
 
@@ -33,10 +33,10 @@ composer require absolutoffice/geo-locator:dev-main
 composer check-platform-reqs --no-dev
 ```
 
-`dev-main` selecciona explícitamente la rama de desarrollo. Para producción, utilizar una versión estable publicada; por ejemplo, después de publicar `v1.0.0`:
+`dev-main` selecciona explícitamente la rama de desarrollo. Para producción, utilizar una versión estable publicada; por ejemplo, después de publicar `v1.0.1`:
 
 ```bash
-composer require 'absolutoffice/geo-locator:^1.0'
+composer require 'absolutoffice/geo-locator:^1.0.1'
 ```
 
 La aplicación tendrá una entrada equivalente a esta en su propio `composer.json`:
@@ -92,14 +92,14 @@ Si la aplicación ya administra sus dependencias con Composer, utilizar preferen
 
 En la página **Releases** del repositorio, seleccionar el asset denominado `geo-locator-<version>-standalone.zip`. Los enlaces automáticos de GitHub **Source code (zip)** y **Source code (tar.gz)** son archivos de fuente y no sustituyen ese asset.
 
-Descargar también `SHA256SUMS` y comprobar el archivo antes de desplegarlo. Por ejemplo, para una Release que realmente se llame `1.0.0`:
+Descargar también `SHA256SUMS` y comprobar el archivo antes de desplegarlo. Por ejemplo, para una Release que realmente se llame `1.0.1`:
 
 ```bash
 sha256sum --check SHA256SUMS
-unzip geo-locator-1.0.0-standalone.zip
+unzip geo-locator-1.0.1-standalone.zip
 ```
 
-En PowerShell puede obtenerse la suma con `Get-FileHash .\geo-locator-1.0.0-standalone.zip -Algorithm SHA256` y compararla con la publicada.
+En PowerShell puede obtenerse la suma con `Get-FileHash .\geo-locator-1.0.1-standalone.zip -Algorithm SHA256` y compararla con la publicada.
 
 El ZIP extrae una carpeta `geo-locator/` con el autoloader `geo-locator/vendor/autoload.php`. La carpeta puede moverse junto con su contenido. Las dependencias de producción y sus licencias acompañan al paquete; PHPStan y PHPCS pertenecen al entorno de desarrollo.
 
@@ -233,4 +233,4 @@ php tests/ComposerInstallationTest.php /srv/my-app/vendor/autoload.php
 - [Composer: repositorios VCS y configuración en el proyecto raíz](https://getcomposer.org/doc/05-repositories.md).
 - [Composer: publicación de librerías y alcance de composer.lock](https://getcomposer.org/doc/02-libraries.md).
 - [GitHub: descarga de archivos de código fuente](https://docs.github.com/en/repositories/working-with-files/using-files/downloading-source-code-archives).
-- [Guía de migración PHP 8.5.12 / xcurl de este proyecto](../MIGRACION-XCURL.md).
+- [Guía de migración a xCurl: requisitos vigentes de geoLocator 1.0.1 e historial de PHP 8.5.12](../MIGRACION-XCURL.md).

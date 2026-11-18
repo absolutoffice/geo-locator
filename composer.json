@@ -14,12 +14,12 @@
         }
     },
     "require": {
-        "php": "^8.5.12",
+        "php": ">=8.4.27 <8.5 || >=8.5.12 <8.6",
         "ext-json": "*",
         "ext-phar": "*",
         "ext-zlib": "*",
         "ext-sodium": "*",
-        "absolutoffice/xcurl": "^1.1",
+        "absolutoffice/xcurl": "1.1.1",
         "maxmind-db/reader": "^1.14"
     },
     "require-dev": {
@@ -36,7 +36,7 @@
         "analyse": "@php vendor/bin/phpstan analyse src --level=max --memory-limit=512M",
         "cs": "@php vendor/bin/phpcs --standard=phpcs.xml.dist",
         "check": [
-            "@composer validate --strict",
+            "@composer validate --strict --no-check-all",
             "@lint",
             "@test",
             "@analyse",
@@ -68,7 +68,7 @@
         "lint": "Check first-party PHP syntax, including examples and release tools.",
         "analyse": "Run PHPStan at maximum level (development dependencies required).",
         "cs": "Check the project coding standard (development dependencies required).",
-        "check": "Validate the package and run all release checks.",
+        "check": "Strictly validate the package (except the intentional exact xCurl 1.1.1 constraint) and run all release checks.",
         "release": "Build a standalone ZIP from a production install; pass -- --version=<version> --output=dist."
     },
     "archive": {

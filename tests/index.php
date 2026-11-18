@@ -364,8 +364,10 @@ $socketTransportAvailable = null;
 $selectedHttpTransport = null;
 
 try {
-    if (PHP_VERSION_ID < 80512 || PHP_VERSION_ID >= 90000) {
-        throw new RuntimeException('GeoLocator requiere PHP ^8.5.12 (desde 8.5.12 y anterior a 9.0).');
+    $phpVersionSupported = (PHP_VERSION_ID >= 80427 && PHP_VERSION_ID < 80500)
+        || (PHP_VERSION_ID >= 80512 && PHP_VERSION_ID < 80600);
+    if (!$phpVersionSupported) {
+        throw new RuntimeException('GeoLocator requiere PHP >=8.4.27 <8.5 o >=8.5.12 <8.6 (xCurl 1.1.1).');
     }
 
     $environmentFile = __DIR__ . '/../config/environment.php';

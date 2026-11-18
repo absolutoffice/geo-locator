@@ -4,24 +4,24 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f88ccd0e8dc5fd1d9128ecf204bb1900",
+    "content-hash": "fba3280022e42e3c6a690cc06325eb3f",
     "packages": [
         {
             "name": "absolutoffice/xcurl",
-            "version": "v1.1.0",
+            "version": "v1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/absolutoffice/xcurl.git",
-                "reference": "5661dcb2ae959ec2249232bef4ed933230f2f4f2"
+                "reference": "055048cc51c91a9bacca663ea3d809fb1a94da92"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/absolutoffice/xcurl/zipball/5661dcb2ae959ec2249232bef4ed933230f2f4f2",
-                "reference": "5661dcb2ae959ec2249232bef4ed933230f2f4f2",
+                "url": "https://api.github.com/repos/absolutoffice/xcurl/zipball/055048cc51c91a9bacca663ea3d809fb1a94da92",
+                "reference": "055048cc51c91a9bacca663ea3d809fb1a94da92",
                 "shasum": ""
             },
             "require": {
-                "php": "^8.5.12"
+                "php": ">=8.4.27 <8.5 || >=8.5.12 <8.6"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.95.27",
@@ -60,8 +60,7 @@
             "support": {
                 "issues": "https://github.com/absolutoffice/xcurl/issues",
                 "source": "https://github.com/absolutoffice/xcurl"
-            },
-            "time": "2026-10-24T23:46:36+00:00"
+            }
         },
         {
             "name": "maxmind-db/reader",
@@ -281,16 +280,16 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.5.12",
+        "php": ">=8.4.27 <8.5 || >=8.5.12 <8.6",
         "ext-json": "*",
         "ext-phar": "*",
         "ext-zlib": "*",
         "ext-sodium": "*"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "plugin-api-version": "2.9.0"
 }

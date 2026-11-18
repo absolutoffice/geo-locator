@@ -4,6 +4,16 @@
 
 No unreleased changes.
 
+## 1.0.1 - 2026-11-18
+
+- Align the required PHP range with the **published xCurl 1.1.1** metadata: `>=8.4.27 <8.5 || >=8.5.12 <8.6`. This adds supported PHP 8.4 installations without claiming PHP 8.4.0, PHP 8.5.0 or PHP 8.6 compatibility.
+- Pin `absolutoffice/xcurl` to exactly `1.1.1`; update the source reference and platform requirements in `composer.lock`.
+- Update CLI/browser bootstrap guards, the release builder, installation instructions and the 1.0.1 source release identifier.
+- Expand the GitHub CI quality matrix to PHP 8.4 and PHP 8.5 (latest compatible patch releases), with an explicit platform requirement check; keep release automation on PHP 8.5.
+- Add a dual-PHP release-verification script and Git-ready validation registry, distinguishing executed checks from pending Composer, PHPStan, PHPCS, consumer installation and standalone build evidence.
+- Correct the strict Composer gate for the intentional exact xCurl 1.1.1 pin (`validate --strict --no-check-all`) and prevent an untagged checkout from being misreported as root version 1.0.0 during local validation; retain strict checks of the manifest and lock. Record the first two PHP checks on Vulcano and their Composer validation warning for traceability; verify the installed xCurl version explicitly and preserve prior standalone artifacts before retrying --release.
+- Audit and correct the README and xCurl migration guide so current **1.0.1 / xCurl 1.1.1 / PHP 8.4 or 8.5** requirements are clearly separated from the historical **1.0.0 / xCurl 1.1.0 / PHP 8.5.12** record. Do not publish the `v1.0.1` tag until CI, Composer installation and the standalone build pass on a supported interpreter.
+
 ## 1.0.0 - 2026-10-28
 
 ### Composer installation and standalone release assets
